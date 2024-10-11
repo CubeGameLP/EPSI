@@ -1,0 +1,9 @@
+add
+remove
+new
+select items
+select room
+select all from room
+select shelf
+select all from shelf
+select room and shelf where item

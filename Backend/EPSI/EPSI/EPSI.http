@@ -1,0 +1,6 @@
+@EPSI_HostAddress = http://localhost:5177
+
+GET {{EPSI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -8,7 +8,6 @@
 
 <MudLayout>
     <MudAppBar Style="@($"background:{Colors.Pink.Darken1};")" Fixed="false">
-        @* <MudIconButton Icon="@Icons.Material.Filled.Menu" OnClick="ToggleDrawer" /> *@
         <MudIconButton Icon="@Icons.Material.Filled.QrCodeScanner" OnClick="@(() => NavigationManager.NavigateTo("/Scan"))" />
         <MudSpacer />
         <MudText Typo="Typo.h4" Style="cursor:pointer;" onclick="@(() => NavigationManager.NavigateTo("/"))">

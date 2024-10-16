@@ -5,42 +5,60 @@
 <PageTitle>Hauptmenü - Inventar App</PageTitle>
 
 <MudContainer Fixed="true" Class="pt-4">
-    <MudToolBar Class="pa-0">
-        <MudStack>
-            <MudAutocomplete @bind-Value="value"
-                             SearchFunc="Search"
-                             Variant="Variant.Outlined"
-                             Label="Suche"
-                             AdornmentIcon="@Icons.Material.Outlined.Search" />
-        </MudStack>
-        <MudSpacer />
-        <MudButtonGroup Variant="Variant.Text">
-            <MudIconButton Icon="@Icons.Material.Outlined.FiberNew" />
-            <MudIconButton Icon="@Icons.Material.Outlined.Add" />
-            <MudIconButton Icon="@Icons.Material.Outlined.Remove" />
-            <MudIconButton Icon="@Icons.Material.Outlined.Autorenew" />
-        </MudButtonGroup>
+    <MudToolBar Class="pa-0 justify-space-between">
+        <MudIconButton Icon="@Icons.Material.Outlined.FiberNew" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Add" OnClick="Add" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Remove" OnClick="Remove" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Autorenew" OnClick="UpdateTable" />
     </MudToolBar>
     <br />
-    <MudTable @ref="mudTable" 
-              T="ItemDTO" 
-              Items="@ItemDTOs" 
-              MultiSelection="true" 
+    @*
+    Filter werden in der Smartphone-Ansicht über der Tabelle angezeigt,
+    da die MudTextFields, welche in der Tabelle zum Filtern genutzt werden,
+    in der XS ansicht aus Platzgründen nicht angezeigt werden.
+    Dies würde das Filtern unmöglich machen, weshalb diese Filter in der
+    XS-Ansicht nun über die Tabelle ihren Platz bekommen haben.
+    *@
+    <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+        <MudStack>
+            <MudTextField @bind-Value="roomFilter" Placeholder="Filtern..." Label="Raum" Immediate="true" @oninput="UpdateTable" />
+            <MudTextField @bind-Value="shelfFilter" Placeholder="Filtern..." Label="Schrank" Immediate="true" @oninput="UpdateTable" />
+            <MudTextField @bind-Value="itemFilter" Placeholder="Filtern..." Label="Gegenstand" Immediate="true" @oninput="UpdateTable" />
+            <MudTextField @bind-Value="amountFilter" Placeholder="Filtern..." Label="Menge" Immediate="true" @oninput="UpdateTable" />
+        </MudStack>
+        <br />
+    </MudHidden>
+    <MudTable @ref="mudTable"
+              T="ItemDTO"
+              Items="filteredItems"
+              MultiSelection="true"
               SelectionChangeable="true"
               Hover="true"
-              @bind-SelectedItems="selectedItems" 
+              @bind-SelectedItems="selectedItems"
               SelectOnRowClick="true">
         <HeaderContent>
-            <MudTh>Raum</MudTh>
-            <MudTh>Schrank</MudTh>
-            <MudTh>Gegenstand</MudTh>
-            <MudTh>Menge</MudTh>
+            <MudTh>
+                <MudTextField @bind-Value="roomFilter" Placeholder="Filtern..." Immediate="true" @oninput="UpdateTable" />
+                Raum
+            </MudTh>
+            <MudTh>
+                <MudTextField @bind-Value="shelfFilter" Placeholder="Filtern..." Immediate="true" @oninput="UpdateTable" />
+                Schrank
+            </MudTh>
+            <MudTh>
+                <MudTextField @bind-Value="itemFilter" Placeholder="Filtern..." Immediate="true" @oninput="UpdateTable" />
+                Gegenstand
+            </MudTh>
+            <MudTh>
+                <MudTextField @bind-Value="amountFilter" Placeholder="Filtern..." Immediate="true" @oninput="UpdateTable" />
+                Menge
+            </MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Raum">@context.RoomName</MudTd>
             <MudTd DataLabel="Schrank">@context.ShelfName</MudTd>
             <MudTd DataLabel="Gegenstand">@context.ItemName</MudTd>
-            <MudTd DataLabel="Menge">@context.ItemAmount</MudTd>
+            <MudTd DataLabel="Menge">@context.ItemAmount x</MudTd>
         </RowTemplate>
         <PagerContent>
             <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
@@ -50,29 +68,90 @@
 
 @code {
     private string value { get; set; }
+    private string roomFilter { get; set; }
+    private string shelfFilter { get; set; }
+    private string itemFilter { get; set; }
+    private string amountFilter { get; set; }
+    private List<ItemDTO> ItemDTOs = new List<ItemDTO>();
     private MudTable<ItemDTO> mudTable;
-    private List<ItemDTO>? ItemDTOs;
     private HashSet<ItemDTO> selectedItems;
 
     protected override async Task OnInitializedAsync()
     {
-        ItemDTOs = new();
+        ItemDTOs = new List<ItemDTO>
+        {
+            new ItemDTO { ItemID = 1, ItemName = "Stuhl", RoomName = "Wohnzimmer", RoomID = "R1", ShelfName = "Schrank A", ShelfID = "S1", ItemAmount = 2 },
+            new ItemDTO { ItemID = 2, ItemName = "Tisch", RoomName = "Wohnzimmer", RoomID = "R1", ShelfName = "Schrank A", ShelfID = "S1", ItemAmount = 1 },
+            new ItemDTO { ItemID = 3, ItemName = "Lampe", RoomName = "Schlafzimmer", RoomID = "R2", ShelfName = "Schrank B", ShelfID = "S2", ItemAmount = 1 },
+            new ItemDTO { ItemID = 4, ItemName = "Bett", RoomName = "Schlafzimmer", RoomID = "R2", ShelfName = "Schrank B", ShelfID = "S2", ItemAmount = 1 },
+            new ItemDTO { ItemID = 5, ItemName = "Schreibtisch", RoomName = "Arbeitszimmer", RoomID = "R3", ShelfName = "Schrank C", ShelfID = "S3", ItemAmount = 1 },
+            new ItemDTO { ItemID = 6, ItemName = "Bücherregal", RoomName = "Arbeitszimmer", RoomID = "R3", ShelfName = "Schrank C", ShelfID = "S3", ItemAmount = 1 },
+            new ItemDTO { ItemID = 7, ItemName = "Sofa", RoomName = "Wohnzimmer", RoomID = "R1", ShelfName = "Schrank A", ShelfID = "S1", ItemAmount = 1 },
+            new ItemDTO { ItemID = 8, ItemName = "Fernseher", RoomName = "Wohnzimmer", RoomID = "R1", ShelfName = "Schrank A", ShelfID = "S1", ItemAmount = 1 },
+            new ItemDTO { ItemID = 9, ItemName = "Teppich", RoomName = "Schlafzimmer", RoomID = "R2", ShelfName = "Schrank B", ShelfID = "S2", ItemAmount = 1 },
+            new ItemDTO { ItemID = 10, ItemName = "Schrank", RoomName = "Arbeitszimmer", RoomID = "R3", ShelfName = "Schrank C", ShelfID = "S3", ItemAmount = 1 },
+            new ItemDTO { ItemID = 11, ItemName = "Stuhl", RoomName = "Küche", RoomID = "R4", ShelfName = "Schrank D", ShelfID = "S4", ItemAmount = 4 },
+            new ItemDTO { ItemID = 12, ItemName = "Tisch", RoomName = "Küche", RoomID = "R4", ShelfName = "Schrank D", ShelfID = "S4", ItemAmount = 1 },
+            new ItemDTO { ItemID = 13, ItemName = "Besteck", RoomName = "Küche", RoomID = "R4", ShelfName = "Schrank D", ShelfID = "S4", ItemAmount = 10 },
+            new ItemDTO { ItemID = 14, ItemName = "Gläser", RoomName = "Küche", RoomID = "R4", ShelfName = "Schrank D", ShelfID = "S4", ItemAmount = 8 },
+            new ItemDTO { ItemID = 15, ItemName = "Kissen", RoomName = "Schlafzimmer", RoomID = "R2", ShelfName = "Schrank B", ShelfID = "S2", ItemAmount = 2 },
+            new ItemDTO { ItemID = 16, ItemName = "Decke", RoomName = "Wohnzimmer", RoomID = "R1", ShelfName = "Schrank A", ShelfID = "S1", ItemAmount = 1 },
+            new ItemDTO { ItemID = 17, ItemName = "Blumen", RoomName = "Balkon", RoomID = "R5", ShelfName = "Schrank E", ShelfID = "S5", ItemAmount = 5 },
+            new ItemDTO { ItemID = 18, ItemName = "Gießkanne", RoomName = "Balkon", RoomID = "R5", ShelfName = "Schrank E", ShelfID = "S5", ItemAmount = 1 },
+            new ItemDTO { ItemID = 19, ItemName = "Buch", RoomName = "Wohnzimmer", RoomID = "R1", ShelfName = "Schrank A", ShelfID = "S1", ItemAmount = 3 },
+            new ItemDTO { ItemID = 20, ItemName = "Computer", RoomName = "Arbeitszimmer", RoomID = "R3", ShelfName = "Schrank C", ShelfID = "S3", ItemAmount = 1 }
+        };
     }
 
     private async Task<IEnumerable<string>> Search(string value, CancellationToken token)
     {
         await Task.Delay(5, token);
 
-        if (string.IsNullOrEmpty(value))
-            return ItemDTOs
-                .Select(i => i.ItemName)
-                .ToList();
+        var searchItems = ItemDTOs
+    .SelectMany(i => new[] { i.ItemName, i.ShelfName, i.RoomName })
+    .Distinct()
+    .ToList();
 
-        return ItemDTOs
-            .Where(i => i.ItemName.Contains(value, StringComparison.InvariantCultureIgnoreCase) 
-                     || i.ShelfName.Contains(value, StringComparison.InvariantCultureIgnoreCase) 
-                     || i.RoomName.Contains(value, StringComparison.InvariantCultureIgnoreCase))
-            .Select(i => i.RoomName + " | " + i.ShelfName + " | " + i.ItemName)
+        return searchItems
+            .Where(name => string.IsNullOrWhiteSpace(value) || name.Contains(value, StringComparison.InvariantCultureIgnoreCase))
             .ToList();
+    }
+
+    private List<ItemDTO> filteredItems => ItemDTOs
+        .Where(item => (string.IsNullOrWhiteSpace(roomFilter) || item.RoomName.Contains(roomFilter, StringComparison.OrdinalIgnoreCase))
+                    && (string.IsNullOrWhiteSpace(shelfFilter) || item.ShelfName.Contains(shelfFilter, StringComparison.OrdinalIgnoreCase))
+                    && (string.IsNullOrWhiteSpace(itemFilter) || item.ItemName.Contains(itemFilter, StringComparison.OrdinalIgnoreCase))
+                    && (string.IsNullOrWhiteSpace(amountFilter) || item.ItemAmount.ToString().Contains(amountFilter, StringComparison.OrdinalIgnoreCase)))
+        .ToList();
+
+    private async Task Add()
+    {
+        var response = await client.PutAsJsonAsync("api/items/update", selectedItems);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var updatedItems = await response.Content.ReadFromJsonAsync<List<ItemDTO>>();
+            selectedItems = new HashSet<ItemDTO>(updatedItems);
+        }
+
+        UpdateTable();
+    }
+
+    private async Task Remove()
+    {
+        var response = await client.PutAsJsonAsync("api/items/update", selectedItems);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var updatedItems = await response.Content.ReadFromJsonAsync<List<ItemDTO>>();
+            selectedItems = new HashSet<ItemDTO>(updatedItems);
+        }
+
+        UpdateTable();
+    }
+
+    private void UpdateTable()
+    {
+        StateHasChanged();
     }
 }

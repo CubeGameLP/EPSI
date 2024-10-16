@@ -9,7 +9,7 @@
         <MudIconButton Icon="@Icons.Material.Outlined.FiberNew" />
         <MudIconButton Icon="@Icons.Material.Outlined.Add" OnClick="Add" />
         <MudIconButton Icon="@Icons.Material.Outlined.Remove" OnClick="Remove" />
-        <MudIconButton Icon="@Icons.Material.Outlined.Autorenew" OnClick="UpdateTable" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Autorenew" OnClick="StateHasChanged" />
     </MudToolBar>
     <br />
     @*
@@ -21,10 +21,34 @@
     *@
     <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
         <MudStack>
-            <MudTextField @bind-Value="roomFilter" Placeholder="Filtern..." Label="Raum" Immediate="true" @oninput="UpdateTable" />
-            <MudTextField @bind-Value="shelfFilter" Placeholder="Filtern..." Label="Schrank" Immediate="true" @oninput="UpdateTable" />
-            <MudTextField @bind-Value="itemFilter" Placeholder="Filtern..." Label="Gegenstand" Immediate="true" @oninput="UpdateTable" />
-            <MudTextField @bind-Value="amountFilter" Placeholder="Filtern..." Label="Menge" Immediate="true" @oninput="UpdateTable" />
+            <MudTextField @bind-Value="roomFilter"
+                          Placeholder="Filtern..."
+                          Label="Raum"
+                          Immediate="true"
+                          @oninput="StateHasChanged"
+                          Adornment="Adornment.End"
+                          AdornmentIcon="@Icons.Material.Outlined.FilterAlt" />
+            <MudTextField @bind-Value="shelfFilter"
+                          Placeholder="Filtern..."
+                          Label="Schrank"
+                          Immediate="true"
+                          @oninput="StateHasChanged"
+                          Adornment="Adornment.End"
+                          AdornmentIcon="@Icons.Material.Outlined.FilterAlt" />
+            <MudTextField @bind-Value="itemFilter"
+                          Placeholder="Filtern..."
+                          Label="Gegenstand"
+                          Immediate="true"
+                          @oninput="StateHasChanged"
+                          Adornment="Adornment.End"
+                          AdornmentIcon="@Icons.Material.Outlined.FilterAlt" />
+            <MudTextField @bind-Value="amountFilter"
+                          Placeholder="Filtern..."
+                          Label="Menge"
+                          Immediate="true"
+                          @oninput="StateHasChanged"
+                          Adornment="Adornment.End"
+                          AdornmentIcon="@Icons.Material.Outlined.FilterAlt" />
         </MudStack>
         <br />
     </MudHidden>
@@ -38,19 +62,39 @@
               SelectOnRowClick="true">
         <HeaderContent>
             <MudTh>
-                <MudTextField @bind-Value="roomFilter" Placeholder="Filtern..." Immediate="true" @oninput="UpdateTable" />
+                <MudTextField @bind-Value="roomFilter"
+                              Placeholder="Filtern..."
+                              Immediate="true"
+                              @oninput="StateHasChanged"
+                              Adornment="Adornment.End"
+                              AdornmentIcon="@Icons.Material.Outlined.FilterAlt" />
                 Raum
             </MudTh>
             <MudTh>
-                <MudTextField @bind-Value="shelfFilter" Placeholder="Filtern..." Immediate="true" @oninput="UpdateTable" />
+                <MudTextField @bind-Value="shelfFilter"
+                              Placeholder="Filtern..."
+                              Immediate="true"
+                              @oninput="StateHasChanged"
+                              Adornment="Adornment.End"
+                              AdornmentIcon="@Icons.Material.Outlined.FilterAlt" />
                 Schrank
             </MudTh>
             <MudTh>
-                <MudTextField @bind-Value="itemFilter" Placeholder="Filtern..." Immediate="true" @oninput="UpdateTable" />
+                <MudTextField @bind-Value="itemFilter"
+                              Placeholder="Filtern..."
+                              Immediate="true"
+                              @oninput="StateHasChanged"
+                              Adornment="Adornment.End"
+                              AdornmentIcon="@Icons.Material.Outlined.FilterAlt" />
                 Gegenstand
             </MudTh>
             <MudTh>
-                <MudTextField @bind-Value="amountFilter" Placeholder="Filtern..." Immediate="true" @oninput="UpdateTable" />
+                <MudTextField @bind-Value="amountFilter"
+                              Placeholder="Filtern..."
+                              Immediate="true"
+                              @oninput="StateHasChanged"
+                              Adornment="Adornment.End"
+                              AdornmentIcon="@Icons.Material.Outlined.FilterAlt" />
                 Menge
             </MudTh>
         </HeaderContent>
@@ -75,6 +119,13 @@
     private List<ItemDTO> ItemDTOs = new List<ItemDTO>();
     private MudTable<ItemDTO> mudTable;
     private HashSet<ItemDTO> selectedItems;
+
+    private List<ItemDTO> filteredItems => ItemDTOs
+    .Where(item => (string.IsNullOrWhiteSpace(roomFilter) || item.RoomName.Contains(roomFilter, StringComparison.OrdinalIgnoreCase))
+                && (string.IsNullOrWhiteSpace(shelfFilter) || item.ShelfName.Contains(shelfFilter, StringComparison.OrdinalIgnoreCase))
+                && (string.IsNullOrWhiteSpace(itemFilter) || item.ItemName.Contains(itemFilter, StringComparison.OrdinalIgnoreCase))
+                && (string.IsNullOrWhiteSpace(amountFilter) || item.ItemAmount.ToString().Contains(amountFilter, StringComparison.OrdinalIgnoreCase)))
+    .ToList();
 
     protected override async Task OnInitializedAsync()
     {
@@ -117,13 +168,6 @@
             .ToList();
     }
 
-    private List<ItemDTO> filteredItems => ItemDTOs
-        .Where(item => (string.IsNullOrWhiteSpace(roomFilter) || item.RoomName.Contains(roomFilter, StringComparison.OrdinalIgnoreCase))
-                    && (string.IsNullOrWhiteSpace(shelfFilter) || item.ShelfName.Contains(shelfFilter, StringComparison.OrdinalIgnoreCase))
-                    && (string.IsNullOrWhiteSpace(itemFilter) || item.ItemName.Contains(itemFilter, StringComparison.OrdinalIgnoreCase))
-                    && (string.IsNullOrWhiteSpace(amountFilter) || item.ItemAmount.ToString().Contains(amountFilter, StringComparison.OrdinalIgnoreCase)))
-        .ToList();
-
     private async Task Add()
     {
         var response = await client.PutAsJsonAsync("api/items/update", selectedItems);
@@ -134,7 +178,7 @@
             selectedItems = new HashSet<ItemDTO>(updatedItems);
         }
 
-        UpdateTable();
+        StateHasChanged();
     }
 
     private async Task Remove()
@@ -147,11 +191,18 @@
             selectedItems = new HashSet<ItemDTO>(updatedItems);
         }
 
-        UpdateTable();
+        StateHasChanged();
     }
 
-    private void UpdateTable()
+    private async Task UpdateTable()
     {
+        var response = await client.GetAsync("api/get");
+        ItemDTOs = await response.Content.ReadFromJsonAsync<List<ItemDTO>>();
+
+        roomFilter = string.Empty;
+        shelfFilter = string.Empty;
+        itemFilter = string.Empty;
+
         StateHasChanged();
     }
 }

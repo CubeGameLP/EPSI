@@ -7,7 +7,7 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Style="@($"background:{Colors.Pink.Darken1};")" Fixed="false">
+    <MudAppBar Style="@($"background:{Colors.Pink.Darken1};")" Class="fixed" Fixed="false">
         <MudIconButton Icon="@Icons.Material.Filled.QrCodeScanner" OnClick="@(() => NavigationManager.NavigateTo("/Scan"))" />
         <MudSpacer />
         <MudText Typo="Typo.h4" Style="cursor:pointer;" onclick="@(() => NavigationManager.NavigateTo("/"))">
@@ -21,7 +21,17 @@
                              title="@(DarkMode ? "On" : "Off")" />
     </MudAppBar>
 
-    @Body
+    <MudHidden Breakpoint="Breakpoint.Xs" Invert="true">
+        <MudForm Class="pt-16">
+            @Body
+        </MudForm>
+    </MudHidden>
+
+    <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true" Class="pa-16">
+        <MudForm Class="pa-16">
+            @Body
+        </MudForm>
+    </MudHidden>
 </MudLayout>
 
 @code {

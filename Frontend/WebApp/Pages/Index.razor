@@ -1,5 +1,4 @@
-﻿@using System.ComponentModel.DataAnnotations
-@using System.Threading
+﻿@inject HttpClient client
 
 @page "/"
 
@@ -8,18 +7,10 @@
 <MudContainer Fixed="true" Class="pt-4">
     <MudToolBar Class="pa-0">
         <MudStack>
-            <MudAutocomplete @bind-Value="_value"
+            <MudAutocomplete @bind-Value="value"
                              SearchFunc="Search"
                              Variant="Variant.Outlined"
-                             Label="Gegenstand"
-                             Margin="_margin"
-                             Dense="_dense"
-                             Disabled="_disabled"
-                             ReadOnly="_readonly"
-                             Placeholder="@(_placeholder ? "Placeholder" : null)"
-                             HelperText="@(_helperText ? "Helper Text" : null)"
-                             HelperTextOnFocus="_helperTextOnFocus"
-                             Clearable="_clearable"
+                             Label="Suche"
                              AdornmentIcon="@Icons.Material.Outlined.Search" />
         </MudStack>
         <MudSpacer />
@@ -31,95 +22,57 @@
         </MudButtonGroup>
     </MudToolBar>
     <br />
-    <MudTable @ref="_table" T="Element" Items="@Elements" MultiSelection="true" SelectionChangeable="true" Hover="true"
-              @bind-SelectedItems="selectedItems" SelectOnRowClick="true">
+    <MudTable @ref="mudTable" 
+              T="ItemDTO" 
+              Items="@ItemDTOs" 
+              MultiSelection="true" 
+              SelectionChangeable="true"
+              Hover="true"
+              @bind-SelectedItems="selectedItems" 
+              SelectOnRowClick="true">
         <HeaderContent>
-            <MudTh>Nr</MudTh>
-            <MudTh>Sign</MudTh>
-            <MudTh>Name</MudTh>
-            <MudTh>Position</MudTh>
-            <MudTh>Molar mass</MudTh>
+            <MudTh>Raum</MudTh>
+            <MudTh>Schrank</MudTh>
+            <MudTh>Gegenstand</MudTh>
+            <MudTh>Menge</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd DataLabel="Nr">@context.Nr</MudTd>
-            <MudTd DataLabel="Sign">@context.Sign</MudTd>
-            <MudTd DataLabel="Name">@context.Name</MudTd>
-            <MudTd DataLabel="Position">@context.Position</MudTd>
-            <MudTd DataLabel="Molar mass">@context.MolarMass</MudTd>
+            <MudTd DataLabel="Raum">@context.RoomName</MudTd>
+            <MudTd DataLabel="Schrank">@context.ShelfName</MudTd>
+            <MudTd DataLabel="Gegenstand">@context.ItemName</MudTd>
+            <MudTd DataLabel="Menge">@context.ItemAmount</MudTd>
         </RowTemplate>
         <PagerContent>
             <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
         </PagerContent>
-        <FooterContent>
-            <MudTd colspan="5">Select All</MudTd>
-        </FooterContent>
     </MudTable>
 </MudContainer>
 
 @code {
-    string _value;
-    Margin _margin;
-    bool _dense;
-    bool _disabled;
-    bool _readonly;
-    bool _placeholder;
-    bool _helperText;
-    bool _helperTextOnFocus;
-    bool _clearable;
-
-    private string[] _states =
-    {
-        "Alabama", "Alaska", "Arizona", "Arkansas", "California",
-        "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
-        "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas",
-        "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
-        "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana",
-        "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico",
-        "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma",
-        "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
-        "Tennessee", "Texas", "Utah", "Vermont", "Virginia",
-        "Washington", "West Virginia", "Wisconsin", "Wyoming"
-    };
-
-    private async Task<IEnumerable<string>> Search(string value, CancellationToken token)
-    {
-        // In real life use an asynchronous function for fetching data from an api.
-        await Task.Delay(5, token);
-
-        // if text is null or empty, show complete list
-        if (string.IsNullOrEmpty(value))
-            return _states;
-
-        return _states.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
-    }
-
-    private HashSet<Element> selectedItems = new HashSet<Element>();
-    private IEnumerable<Element>? Elements;
-    private MudTable<Element> _table;
+    private string value { get; set; }
+    private MudTable<ItemDTO> mudTable;
+    private List<ItemDTO>? ItemDTOs;
+    private HashSet<ItemDTO> selectedItems;
 
     protected override async Task OnInitializedAsync()
     {
-        Elements = new List<Element>
-        {
-            new Element { Nr = 1, Sign = "H", Name = "Hydrogen", Position = "1", MolarMass = 1.008 },
-            new Element { Nr = 2, Sign = "He", Name = "Helium", Position = "18", MolarMass = 4.0026 },
-            new Element { Nr = 3, Sign = "Li", Name = "Lithium", Position = "1", MolarMass = 6.94 },
-            new Element { Nr = 4, Sign = "Be", Name = "Beryllium", Position = "2", MolarMass = 9.0122 },
-            new Element { Nr = 5, Sign = "B", Name = "Boron", Position = "13", MolarMass = 10.81 },
-            new Element { Nr = 6, Sign = "C", Name = "Carbon", Position = "14", MolarMass = 12.011 },
-            new Element { Nr = 7, Sign = "N", Name = "Nitrogen", Position = "15", MolarMass = 14.007 },
-            new Element { Nr = 8, Sign = "O", Name = "Oxygen", Position = "16", MolarMass = 15.999 },
-            new Element { Nr = 9, Sign = "F", Name = "Fluorine", Position = "17", MolarMass = 18.998 },
-            new Element { Nr = 10, Sign = "Ne", Name = "Neon", Position = "18", MolarMass = 20.180 }
-        };
+        ItemDTOs = new();
     }
 
-    private class Element
+    private async Task<IEnumerable<string>> Search(string value, CancellationToken token)
     {
-        public int Nr { get; set; }
-        public string Sign { get; set; }
-        public string Name { get; set; }
-        public string Position { get; set; }
-        public double MolarMass { get; set; }
+        await Task.Delay(5, token);
+
+        if (string.IsNullOrEmpty(value))
+            return ItemDTOs
+                .Select(i => i.ItemName)
+                .ToList();
+
+        return ItemDTOs
+            .Where(i => i.ItemName.Contains(value, StringComparison.InvariantCultureIgnoreCase) 
+                     || i.ShelfName.Contains(value, StringComparison.InvariantCultureIgnoreCase) 
+                     || i.RoomName.Contains(value, StringComparison.InvariantCultureIgnoreCase))
+            .Select(i => i.RoomName + " | " + i.ShelfName + " | " + i.ItemName)
+            .ToList();
     }
 }

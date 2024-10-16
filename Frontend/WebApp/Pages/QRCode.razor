@@ -1,12 +1,18 @@
-﻿@page "/Scan"
-
-<PageTitle>QR-Code Scanner</PageTitle>
-
-<div id="qrCodeResult"></div>
-<MudText Typo="Typo.h4">Scan QR Code...</MudText>
-<div style="display: flex; justify-content:center;">
-    <div id="qrCodeReader" style="width: 500px; height: 500px"></div>
-</div>
+﻿<MudDialog>
+    <TitleContent>
+        Scanner
+    </TitleContent>
+    <DialogContent>
+        <div id="qrCodeResult"></div>
+        <MudText Typo="Typo.h4">Scan QR Code...</MudText>
+        <div style="display: flex; justify-content:center;">
+            <div id="qrCodeReader" style="width: 500px; height: 500px"></div>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Close">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
 
 <script>
     function domReady(fn) {
@@ -35,4 +41,8 @@
 </script>
 
 @code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    private void Close() => MudDialog.Close(DialogResult.Ok(true));
 }

@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@inject IDialogService DialogService
 @inject NavigationManager NavigationManager
 
 <MudThemeProvider IsDarkMode="DarkMode" />
@@ -8,7 +9,7 @@
 
 <MudLayout>
     <MudAppBar Style="@($"background:{Colors.Pink.Darken1};")" Class="fixed" Fixed="false">
-        <MudIconButton Icon="@Icons.Material.Filled.QrCodeScanner" OnClick="@(() => NavigationManager.NavigateTo("/Scan"))" />
+        <MudIconButton Icon="@Icons.Material.Filled.QrCodeScanner" OnClick="OpenDialog" />
         <MudSpacer />
         <MudText Typo="Typo.h4" Style="cursor:pointer;" onclick="@(() => NavigationManager.NavigateTo("/"))">
             Inventar App
@@ -41,5 +42,11 @@
     private void ToggleDrawer()
     {
         _open = !_open;
+    }
+
+    private async Task OpenDialog()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var dialog = await DialogService.ShowAsync<QRCode>("Scanner", options);
     }
 }

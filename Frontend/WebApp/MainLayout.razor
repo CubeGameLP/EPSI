@@ -7,30 +7,22 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Style="@($"color:{Colors.Pink.Lighten5}; background:{Colors.Pink.Darken1};")" Fixed="false">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" OnClick="ToggleDrawer" />
+    <MudAppBar Style="@($"background:{Colors.Pink.Darken1};")" Fixed="false">
+        @* <MudIconButton Icon="@Icons.Material.Filled.Menu" OnClick="ToggleDrawer" /> *@
+        <MudIconButton Icon="@Icons.Material.Filled.QrCodeScanner" OnClick="@(() => NavigationManager.NavigateTo("/Scan"))" />
         <MudSpacer />
         <MudText Typo="Typo.h4" Style="cursor:pointer;" onclick="@(() => NavigationManager.NavigateTo("/"))">
             Inventar App
         </MudText>
+        <MudSpacer />
         <MudToggleIconButton @bind-Toggled="DarkMode"
                              Icon="@Icons.Material.Filled.LightMode"
                              Style="@($"color:{(DarkMode ? Colors.Purple.Darken4 : Colors.Yellow.Default)};")"
                              ToggledIcon="@Icons.Material.Filled.DarkMode"
                              title="@(DarkMode ? "On" : "Off")" />
     </MudAppBar>
-    <MudDrawer @bind-Open="@_open" Fixed="true" Elevation="1" Variant="@DrawerVariant.Responsive" OpenMiniOnHover="true">
-        <MudNavMenu>
-            <MudNavLink Href="Room" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.MeetingRoom">Raum</MudNavLink>
-            <MudNavLink Href="Shelf" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Inventory">Schrank</MudNavLink>
-            <MudNavLink Href="Item" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Widgets">Inhalt</MudNavLink>
-        </MudNavMenu>
-    </MudDrawer>
-    <MudPaper Style="display: contents;" Height="100%" Width="100%">
-        <MudContainer Style="width: 75%;">
-            @Body
-        </MudContainer>
-    </MudPaper>
+
+    @Body
 </MudLayout>
 
 @code {

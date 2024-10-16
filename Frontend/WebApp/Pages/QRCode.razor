@@ -2,36 +2,37 @@
 
 <PageTitle>QR-Code Scanner</PageTitle>
 
-<MudContainer Fixed="true" Class="camera-container">
-    <MudPaper Class="camera-view">
-        <div>
-            <video id="videoElement" autoplay></video>
-            <button @onclick="StartScanner">Start Scanner</button>
-            <button @onclick="CaptureFrame">QR Code Scannen</button>
-            <p>Ergebnis: @qrCodeResult</p>
-        </div>
-    </MudPaper>
-</MudContainer>
+<div id="qrCodeResult"></div>
+<MudText Typo="Typo.h4">Scan QR Code...</MudText>
+<div style="display: flex; justify-content:center;">
+    <div id="qrCodeReader" style="width: 500px; height: 500px"></div>
+</div>
 
-@code {
-    private string qrCodeResult;
-
-    // Wird aufgerufen, um die Kamera zu starten
-    private async Task StartScanner()
-    {
-        await JS.InvokeVoidAsync("startCamera");
-    }
-
-    // Wird aufgerufen, um ein Bild vom Video zu erfassen und den QR-Code zu scannen
-    private async Task CaptureFrame()
-    {
-        var imageData = await JS.InvokeAsync<string>("captureFrame");
-        if (!string.IsNullOrEmpty(imageData))
-        {
-            // Decodiere das Bild
-            var barcodeReader = new ZXing.BarcodeReader();
-            var result = barcodeReader.Decode(Convert.FromBase64String(imageData));
-            qrCodeResult = result?.Text ?? "Kein QR Code gefunden";
+<script>
+    function domReady(fn) {
+        if (document.readyState === "complete" || document.readyState === "interactive") {
+            setTimeout(fn, 1);
+        } else {
+            document.addEventListener("DOMContentLoaded", fn);
         }
     }
+
+    domReady(function () {
+        var qrCode = document.getElementById('qrCodeResult');
+        var lastResult, countResults = 0;
+
+        function onScanSuccess(decodeText, decodeResult) {
+            if (decodeText !== lastResult) {
+                ++countResults;
+                lastResult = decodeText;
+                qrCode.innerHTML = decodeText;  // QR-Code-Text anzeigen
+            }
+        }
+
+        var htmlScanner = new Html5QrcodeScanner("qrCodeReader", { fps: 10, qrbox: 250 });
+        htmlScanner.render(onScanSuccess);
+    });
+</script>
+
+@code {
 }

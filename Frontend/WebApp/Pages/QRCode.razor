@@ -3,11 +3,11 @@
         Scanner
     </TitleContent>
     <DialogContent>
-        <div id="qrCodeResult"></div>
-        <MudText Typo="Typo.h4">Scan QR Code...</MudText>
-        <div style="display: flex; justify-content:center;">
-            <div id="qrCodeReader" style="width: 500px; height: 500px"></div>
-        </div>
+        <MudPaper id="qrCodeResult"></MudPaper>
+        <MudText Typo="Typo.h6">Scan QR Code...</MudText>
+        <MudContainer style="display: flex; justify-content:center;">
+            <MudPaper id="qrCodeReader" style="width: 500px; max-width: 90%;" />
+        </MudContainer>
     </DialogContent>
     <DialogActions>
         <MudButton Color="Color.Primary" OnClick="Close">Ok</MudButton>

@@ -6,6 +6,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
 
 builder.Services.AddHttpClient();
+builder.Services.AddSingleton<FilterService>();
 
 var app = builder.Build();
 

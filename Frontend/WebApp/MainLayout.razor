@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
+@inject FilterService FilterService
 
 <MudThemeProvider IsDarkMode="DarkMode" />
 <MudPopoverProvider />
@@ -36,17 +37,15 @@
 </MudLayout>
 
 @code {
-    public bool _open = false;
-    public bool DarkMode { get; set; }
-
-    private void ToggleDrawer()
-    {
-        _open = !_open;
-    }
+    public Action OnFilterChanged;
+    private bool DarkMode { get; set; }
 
     private async Task OpenDialog()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
         var dialog = await DialogService.ShowAsync<QRCode>("Scanner", options);
+        FilterService.filterDTO = (FilterDTO)dialog.Result.Result.Data;
+
+        OnFilterChanged.Invoke();
     }
 }

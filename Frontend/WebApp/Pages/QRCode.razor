@@ -1,12 +1,14 @@
-﻿<MudDialog>
+﻿@inject HttpClient client
+
+<MudDialog>
     <TitleContent>
-        Scanner
+        QR-Code Scanner
     </TitleContent>
     <DialogContent>
-        <MudPaper id="qrCodeResult"></MudPaper>
+        <MudTextField @bind-Value="qrCodeResult" id="qrCodeResult" Class="invisible" />
         <MudText Typo="Typo.h6">Scan QR Code...</MudText>
-        <MudContainer style="display: flex; justify-content:center;">
-            <MudPaper id="qrCodeReader" style="width: 500px; max-width: 90%;" />
+        <MudContainer Class="justify-center d-flex">
+            <MudPaper id="qrCodeReader" Style="width: 500px;" Class="pa-4" />
         </MudContainer>
     </DialogContent>
     <DialogActions>
@@ -43,6 +45,21 @@
 @code {
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
+    private string qrCodeResult { get; set; }
+    private FilterDTO filterDTO = new();
 
-    private void Close() => MudDialog.Close(DialogResult.Ok(true));
+    private async Task Close()
+    {
+        await AfterScan();
+        MudDialog.Close(DialogResult.Ok(filterDTO));
+    }
+
+    private async Task AfterScan()
+    {
+        if (!string.IsNullOrWhiteSpace(qrCodeResult))
+        {
+            var response = await client.GetAsync($"api/transform?{qrCodeResult}");
+            var filterDTO = await response.Content.ReadFromJsonAsync<FilterDTO>();
+        }
+    }
 }

@@ -1,4 +1,6 @@
 ﻿@inject HttpClient client
+@inject FilterService FilterService
+@inherits LayoutComponentBase
 
 @page "/"
 
@@ -112,13 +114,17 @@
 
 @code {
     private string value { get; set; }
-    private string roomFilter { get; set; }
-    private string shelfFilter { get; set; }
-    private string itemFilter { get; set; }
-    private string amountFilter { get; set; }
+    public string roomFilter { get; set; }
+    public string shelfFilter { get; set; }
+    public string itemFilter { get; set; }
+    public string amountFilter { get; set; }
     private List<ItemDTO> ItemDTOs = new List<ItemDTO>();
     private MudTable<ItemDTO> mudTable;
     private HashSet<ItemDTO> selectedItems;
+    private FilterDTO filterDTO;
+
+    [CascadingParameter]
+    private MainLayout MainLayout { get; set; }
 
     private List<ItemDTO> filteredItems => ItemDTOs
     .Where(item => (string.IsNullOrWhiteSpace(roomFilter) || item.RoomName.Contains(roomFilter, StringComparison.OrdinalIgnoreCase))
@@ -152,6 +158,8 @@
             new ItemDTO { ItemID = 19, ItemName = "Buch", RoomName = "Wohnzimmer", RoomID = "R1", ShelfName = "Schrank A", ShelfID = "S1", ItemAmount = 3 },
             new ItemDTO { ItemID = 20, ItemName = "Computer", RoomName = "Arbeitszimmer", RoomID = "R3", ShelfName = "Schrank C", ShelfID = "S3", ItemAmount = 1 }
         };
+
+        MainLayout.OnFilterChanged = UpdateFilter;
     }
 
     private async Task<IEnumerable<string>> Search(string value, CancellationToken token)
@@ -202,6 +210,21 @@
         roomFilter = string.Empty;
         shelfFilter = string.Empty;
         itemFilter = string.Empty;
+
+        StateHasChanged();
+    }
+
+    private void UpdateFilter()
+    {
+        filterDTO = FilterService.filterDTO;
+
+        if (filterDTO != null)
+        {
+            roomFilter = filterDTO.RoomName;
+            shelfFilter = filterDTO.ShelfName;
+            itemFilter = filterDTO.ItemName;
+            amountFilter = filterDTO.ItemAmount;
+        }
 
         StateHasChanged();
     }

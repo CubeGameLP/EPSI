@@ -1,6 +1,5 @@
 
 using EPSI.Context;
-using Microsoft.Extensions.Options;
 
 namespace EPSI
 {
@@ -21,7 +20,7 @@ namespace EPSI
             {
                 options.AddPolicy("AllowAll", builder =>
                 {
-                    builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+                    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
                 });
             });
 

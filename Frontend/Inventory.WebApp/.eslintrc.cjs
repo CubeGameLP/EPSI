@@ -46,11 +46,6 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'vue/singleline-html-element-content-newline': 'off',
     'vue/multiline-html-element-content-newline': 'off',
-    'prettier/prettier': [
-      'error',
-      {
-        singleAttributePerLine: false, // Erlaube mehrere Attribute in einer Zeile
-      },
-    ],
+    'linebreak-style': ['error', 'windows'],
   },
 };

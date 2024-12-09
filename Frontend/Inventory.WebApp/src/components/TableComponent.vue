@@ -1,95 +1,53 @@
 <template>
-  <div class="q-pa-md">
-    <q-table
-      flat
-      bordered
-      dense
-      :rows="rows"
-      :columns="columns"
-      row-key="name"
-    />
-  </div>
+  <q-table :rows="data" :columns="columns" row-key="ItemID" flat bordered>
+    <template #body-cell-ItemName="slotProps">
+      <q-td>{{ slotProps.row.ItemName }}</q-td>
+    </template>
+    <template #body-cell-RoomName="slotProps">
+      <q-td>{{ slotProps.row.RoomName }}</q-td>
+    </template>
+    <template #body-cell-ShelfID="slotProps">
+      <q-td>{{ slotProps.row.ShelfID }}</q-td>
+    </template>
+    <template #body-cell-ItemAmount="slotProps">
+      <q-td>{{ slotProps.row.ItemAmount }}</q-td>
+    </template>
+  </q-table>
 </template>
 
-<script lang="ts">
-type Column = {
-  name: string;
-  required?: boolean;
-  label: string;
-  align?: 'left' | 'center' | 'right';
-  field: string | ((row: Row) => string | number);
-  format?: (val: string | number) => string;
-  sortable?: boolean;
-  sort?: (a: string, b: string) => number;
-};
+<script setup lang="ts">
+import { defineProps, ref } from 'vue';
+import type { ItemDTO } from 'src/types/ItemDTO';
 
-type Row = {
-  name: string;
-  calories: number;
-  fat: number;
-  carbs: number;
-  protein: number;
-  sodium: number;
-  calcium: string;
-  iron: string;
-};
+const columns = ref([
+  {
+    name: 'itemName',
+    align: 'left' as 'left' | 'right' | 'center',
+    label: 'Item Name',
+    field: 'itemName',
+  },
+  {
+    name: 'roomName',
+    align: 'left' as 'left' | 'right' | 'center',
+    label: 'Room Name',
+    field: 'roomName',
+  },
+  {
+    name: 'shelfID',
+    align: 'left' as 'left' | 'right' | 'center',
+    label: 'Shelf ID',
+    field: 'shelfID',
+  },
+  {
+    name: 'itemAmount',
+    align: 'right' as 'left' | 'right' | 'center',
+    label: 'Item Amount',
+    field: 'itemAmount',
+  },
+]);
 
-const columns: Column[] = [
-  {
-    name: 'name',
-    required: true,
-    label: 'Dessert (100g serving)',
-    align: 'left',
-    field: (row: Row) => row.name,
-    format: (val: string | number) => `${val}`,
-    sortable: true,
-  },
-  {
-    name: 'calories',
-    align: 'center',
-    label: 'Calories',
-    field: 'calories',
-    sortable: true,
-  },
-  { name: 'fat', label: 'Fat (g)', field: 'fat', sortable: true },
-  { name: 'carbs', label: 'Carbs (g)', field: 'carbs' },
-  { name: 'protein', label: 'Protein (g)', field: 'protein' },
-  { name: 'sodium', label: 'Sodium (mg)', field: 'sodium' },
-  {
-    name: 'calcium',
-    label: 'Calcium (%)',
-    field: 'calcium',
-    sortable: true,
-    sort: (a: string, b: string) => parseInt(a, 10) - parseInt(b, 10),
-  },
-  {
-    name: 'iron',
-    label: 'Iron (%)',
-    field: 'iron',
-    sortable: true,
-    sort: (a: string, b: string) => parseInt(a, 10) - parseInt(b, 10),
-  },
-];
-
-const rows: Row[] = [
-  {
-    name: 'Frozen Yogurt',
-    calories: 159,
-    fat: 6.0,
-    carbs: 24,
-    protein: 4.0,
-    sodium: 87,
-    calcium: '14%',
-    iron: '1%',
-  },
-];
-
-export default {
-  setup() {
-    return {
-      columns,
-      rows,
-    };
-  },
-};
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const props = defineProps<{
+  data: ItemDTO[];
+}>();
 </script>

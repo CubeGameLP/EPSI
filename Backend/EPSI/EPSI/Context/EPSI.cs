@@ -9,10 +9,11 @@ namespace EPSI.Context
         public DbSet<Item> Items { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<Shelf> Shelves { get; set; }
-        public DbSet<Item2Shelf> item2Shelves { get; set; }
+        public DbSet<Item2Shelf> Item2Shelves { get; set; }
 
 
-        public EPSIContext(DbContextOptions<EPSIContext> options) : base(options){
+        public EPSIContext(DbContextOptions<EPSIContext> options) : base(options)
+        {
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

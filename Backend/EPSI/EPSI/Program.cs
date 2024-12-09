@@ -1,4 +1,7 @@
 
+using EPSI.Context;
+using Microsoft.Extensions.Options;
+
 namespace EPSI
 {
     public class Program
@@ -10,9 +13,17 @@ namespace EPSI
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddDbContext<EPSIContext>();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                {
+                    builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+                });
+            });
 
             var app = builder.Build();
 
@@ -27,10 +38,13 @@ namespace EPSI
 
             app.UseAuthorization();
 
+            app.UseCors("AllowAll");
 
             app.MapControllers();
 
             app.Run();
+
+
         }
     }
 }

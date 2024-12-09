@@ -3,7 +3,6 @@
     <q-table
       flat
       bordered
-      title="Treats"
       dense
       :rows="rows"
       :columns="columns"

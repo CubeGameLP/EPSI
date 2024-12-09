@@ -1,8 +1,9 @@
 <template>
-  <q-page class="row items-center justify-evenly">Pagecontent</q-page>
+  <table-component />
 </template>
 
 <script setup lang="ts">
+import TableComponent from 'components/TableComponent.vue';
 defineOptions({
   name: 'IndexPage',
 });

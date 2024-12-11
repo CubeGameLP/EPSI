@@ -1,4 +1,4 @@
-name: Lint Frontend
+name: Push Frontend
 
 on:
   push:
@@ -32,6 +32,7 @@ jobs:
       - name: Run Lint
         working-directory: ./Frontend/EPSI
         run: npm run lint
+---
 
   Build-frontend:
     runs-on: ubuntu-latest

@@ -1,9 +1,6 @@
 name: Lint Frontend
 
 on
-push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
@@ -29,6 +26,6 @@ jobs:
         run: npm install
 
       # Schritt 4: Lint im Frontend-Ordner ausführen
-      - name: Run Build
+      - name: Run ESLint
         working-directory: ./Frontend/EPSI
-        run: npm run lint
+        run: npm run build

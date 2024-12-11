@@ -33,7 +33,7 @@ jobs:
         working-directory: ./Frontend/EPSI
         run: npm run lint
 
-  Build-frontend:
+  build-frontend:
     runs-on: ubuntu-latest
 
     steps:

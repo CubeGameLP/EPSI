@@ -1,0 +1,58 @@
+name: Push Frontend
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Schritt 1: Repository auschecken
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      # Schritt 2: Node.js installieren
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20 # Nutze die Version, die dein Projekt benötigt
+
+      # Schritt 3: Abhängigkeiten im Frontend-Ordner installieren
+      - name: Install dependencies
+        working-directory: ./Frontend/EPSI
+        run: npm install
+
+      # Schritt 4: Lint im Frontend-Ordner ausführen
+      - name: Run Lint
+        working-directory: ./Frontend/EPSI
+        run: npm run lint
+
+  build-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Schritt 1: Repository auschecken
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      # Schritt 2: Node.js installieren
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20 # Nutze die Version, die dein Projekt benötigt
+
+      # Schritt 3: Abhängigkeiten im Frontend-Ordner installieren
+      - name: Install dependencies
+        working-directory: ./Frontend/EPSI/
+        run: npm install
+
+      # Schritt 4: Lint im Frontend-Ordner ausführen
+      - name: Run Build
+        working-directory: ./Frontend/EPSI/
+        run: npm run build

@@ -1,7 +1,7 @@
-const { configure } = require('quasar/wrappers');
-const path = require('path');
+import { configure } from 'quasar/wrappers';
+import path from 'path';
 
-module.exports = configure(function () {
+export default configure(() => {
   return {
     boot: ['i18n'],
 
@@ -20,7 +20,7 @@ module.exports = configure(function () {
         [
           '@intlify/vite-plugin-vue-i18n',
           {
-            include: path.resolve(__dirname, './src/i18n/**'),
+            include: path.resolve('./src/i18n/**'),
           },
         ],
         [
@@ -33,7 +33,6 @@ module.exports = configure(function () {
               lintCommand: 'eslint "./**/*.{js,ts,mjs,cjs,vue}"',
             },
           },
-          { server: false },
         ],
       ],
     },
@@ -51,9 +50,7 @@ module.exports = configure(function () {
 
     ssr: {
       pwa: false,
-
       prodPort: 3000,
-
       middlewares: ['render'],
     },
 
@@ -73,11 +70,8 @@ module.exports = configure(function () {
 
     electron: {
       inspectPort: 5858,
-
       bundler: 'packager',
-
       packager: {},
-
       builder: {
         appId: 'inventory-webapp',
       },

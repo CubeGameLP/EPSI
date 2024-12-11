@@ -13,8 +13,8 @@ namespace EPSI_Backend.Models
         public int ItemID { get; set; }
         public int ShelfID { get; set; }
         public int Amount { get; set; }
-        public required Item Item { get; set; }
-        public required Shelf Shelf { get; set; }
+        public Item? Item { get; set; }
+        public Shelf? Shelf { get; set; }
 
     }
 }

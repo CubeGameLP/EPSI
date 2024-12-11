@@ -11,7 +11,7 @@ on:
 jobs:
   lint-frontend:
     runs-on: ubuntu-latest
-
+    
     steps:
       # Schritt 1: Repository auschecken
       - name: Check out code

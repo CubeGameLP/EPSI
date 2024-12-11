@@ -25,10 +25,10 @@ jobs:
 
       # Schritt 3: Abhängigkeiten im Frontend-Ordner installieren
       - name: Install dependencies
-        working-directory: ./Frontend/EPSI
+        working-directory: ./Frontend/EPSI/
         run: npm install
 
       # Schritt 4: Lint im Frontend-Ordner ausführen
       - name: Run Build
-        working-directory: ./Frontend/EPSI
+        working-directory: ./Frontend/EPSI/
         run: npm run build

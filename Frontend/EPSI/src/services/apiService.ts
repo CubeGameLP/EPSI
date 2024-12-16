@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { ItemDTO } from '@/src/types/ItemDTO';
 
-const API_URL = 'https://localhost:7237/Testdata/GetAllData?filter=';
+const API_URL = 'https://localhost:7237/Testdata/GetAllData';
 
 export const fetchTestData = async (filter = ''): Promise<ItemDTO[]> => {
   try {

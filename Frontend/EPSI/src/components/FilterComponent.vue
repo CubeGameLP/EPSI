@@ -18,6 +18,7 @@ const props = defineProps<{
 const filter = ref('');
 
 function onFilter() {
+  console.log('Filter value:', filter.value);
   props.onFilterChange(filter.value);
 }
 </script>

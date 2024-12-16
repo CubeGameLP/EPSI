@@ -22,6 +22,7 @@ import type { ItemDTO } from 'src/types/ItemDTO';
 const data = ref<ItemDTO[]>([]);
 
 async function handleFilterChange(filter: string) {
+  console.log('Filter:', filter); // Überprüfen, ob der Filter korrekt empfangen wird
   try {
     data.value = await fetchTestData(filter);
   } catch (error) {

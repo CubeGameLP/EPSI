@@ -5,7 +5,7 @@
     row-key="ItemID"
     flat
     bordered
-    @row-click="openDialog"
+    @row-click="(evt, row) => openDialog(evt, row)"
   >
     <template #body-cell-ItemName="slotProps">
       <q-td>{{ slotProps.row.ItemName }}</q-td>
@@ -23,12 +23,7 @@
 
   <ChangeAmountComponent
     v-if="isDialogVisible"
-    :is-visible="isDialogVisible"
-    :item-name="selectedItem?.ItemName ?? ''"
-    :room-name="selectedItem?.RoomName ?? ''"
-    :shelf-i-d="String(selectedItem?.ShelfID ?? '')"
-    :item-amount="selectedItem?.ItemAmount ?? 0"
-    :item-i-d="selectedItem?.ItemID ?? 0"
+    :data="selectedItem"
     @update="updateItemAmount"
     @close="closeDialog"
   />
@@ -77,17 +72,17 @@ const columns = ref([
   },
 ]);
 
-const selectedItem = ref<ItemDTO | null>(null);
+let selectedItem: ItemDTO | null;
 const isDialogVisible = ref(false);
 
 const openDialog = (_evt: Event, row: ItemDTO) => {
-  selectedItem.value = row;
+  selectedItem = row;
   isDialogVisible.value = true;
 };
 
 const closeDialog = () => {
   isDialogVisible.value = false;
-  selectedItem.value = null;
+  selectedItem = null;
 };
 
 const updateItemAmount = (payload: {

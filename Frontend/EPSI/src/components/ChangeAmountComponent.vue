@@ -1,27 +1,34 @@
 <template>
-  <q-dialog v-model="isVisible" persistent>
+  <q-dialog v-model="dialogVisible">
     <q-card>
       <q-card-section>
-        <div class="text-h6">Update Item</div>
+        <div class="text-h6">Change Amount</div>
       </q-card-section>
       <q-card-section class="q-pt-none">
         <div class="q-gutter-md">
-          <div><strong>Item:</strong> {{ itemName }}</div>
-          <div><strong>Room:</strong> {{ roomName }}</div>
-          <div><strong>Shelf:</strong> {{ shelfID }}</div>
+          <div>
+            <strong>Item:</strong>
+            {{ ParsedData.itemName || 'No Data' }}
+          </div>
+          <div>
+            <strong>Room:</strong> {{ ParsedData.roomName || 'No Data' }}
+          </div>
+          <div>
+            <strong>Shelf:</strong> {{ ParsedData.shelfID || 'No Data' }}
+          </div>
         </div>
         <div class="row items-center q-gutter-sm">
           <q-btn flat round icon="remove" @click="decreaseAmount" />
           <q-input
-            v-model.number="localItemAmount"
-            type="number"
+            :model-value="localItemAmount"
+            type="text"
             dense
             class="col"
           />
           <q-btn flat round icon="add" @click="increaseAmount" />
         </div>
       </q-card-section>
-      <q-card-actions class="items-end">
+      <q-card-actions>
         <q-btn flat label="Cancel" color="primary" @click="onClose" />
         <q-btn flat label="OK" color="primary" @click="confirmUpdate" />
       </q-card-actions>
@@ -30,16 +37,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { watch } from 'vue';
 import { defineProps, defineEmits } from 'vue';
+import { ItemDTO } from '../types/ItemDTO';
 
 const props = defineProps<{
-  readonly isVisible: boolean;
-  readonly itemName: string;
-  readonly roomName: string;
-  readonly shelfID: string;
-  readonly itemAmount: number;
-  readonly itemID: number;
+  data: ItemDTO | null;
 }>();
 
 const emit = defineEmits<{
@@ -50,38 +53,40 @@ const emit = defineEmits<{
   (e: 'close'): void;
 }>();
 
-// Lokaler Zustand
-const isVisible = ref(props.isVisible);
-const localItemAmount = ref(props.itemAmount);
+let dialogVisible = false;
+let ParsedData = JSON.parse(JSON.stringify(props.data));
+let localItemAmount: number = 0;
 
-// Beobachte die Sichtbarkeit des Dialogs
 watch(
-  () => props.isVisible,
-  (newVal) => {
-    isVisible.value = newVal;
+  () => props.data,
+  (newData) => {
+    if (newData) {
+      dialogVisible = true;
+    }
   },
+  { immediate: true },
 );
 
-// Funktionen
 const decreaseAmount = () => {
-  localItemAmount.value = Math.max(0, localItemAmount.value - 1);
+  localItemAmount = Math.max(-ParsedData.itemAmount, localItemAmount - 1);
 };
 
 const increaseAmount = () => {
-  localItemAmount.value += 1;
+  localItemAmount += 1;
 };
 
 const confirmUpdate = () => {
-  const amountDifference = localItemAmount.value - props.itemAmount;
+  const amountDifference = localItemAmount;
   emit('update', {
-    itemID: props.itemID,
-    shelfID: props.shelfID,
+    itemID: props.data?.ItemID ?? 0,
+    shelfID: String(props.data?.ShelfID),
     amountDifference,
   });
-  emit('close');
+  onClose();
 };
 
 const onClose = () => {
+  dialogVisible = false;
   emit('close');
 };
 </script>
